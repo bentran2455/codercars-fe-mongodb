@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ConfirmModal from "../components/ConfirmModal";
 import FormModal from "../components/FormModal";
 import AddIcon from "@mui/icons-material/Add";
+import Search from "../components/Search";
 
 const HomePage = () => {
   const [cars, setCars] = useState([]);
@@ -16,6 +17,7 @@ const HomePage = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [mode, setMode] = useState("create");
+  const [search, setSearch] = useState("");
 
   const handleClickNew = () => {
     setMode("create");
@@ -31,6 +33,7 @@ const HomePage = () => {
     setOpenConfirm(true);
     setSelectedCar(cars.find((car) => car._id === id));
   };
+
   const handleDelete = async () => {
     try {
       await apiService.delete(`/cars/${selectedCar._id}`);
@@ -85,21 +88,41 @@ const HomePage = () => {
     release_date: car.release_date,
   }));
 
-  const getData =
-    useCallback(
-      async () => {
-    const res = await apiService.get(`/cars?page=${page}`);
-    setCars(res.data.cars);
-    setTotalPages(res.data.total);
+  const getData = useCallback(
+    async (search) => {
+      console.log(">>> what is search", search);
+      const url = search
+        ? `/cars/search?name=${search}&page=${page}`
+        : `/cars?page=${page}`;
+      try {
+        const result = await apiService.get(url);
+        setCars(result.data.cars);
+        setTotalPages(result.data.total);
+      } catch (err) {
+        console.log(err);
+        setCars([]);
       }
-      , [page]);
+    },
+    [page]
+  );
 
+  const handleSearch = (e, search) => {
+    e.preventDefault();
+    setPage(1);
+    getData(search);
+  };
   useEffect(() => {
-    getData();
+    getData(search);
+    // eslint-disable-next-line
   }, [getData]);
 
   return (
     <Container maxWidth="lg" sx={{ pb: 3 }}>
+      <Search
+        handleSearch={handleSearch}
+        search={search}
+        setSearch={setSearch}
+      />
       <ConfirmModal
         open={openConfirm}
         name={name}
@@ -135,7 +158,9 @@ const HomePage = () => {
                 color="primary"
                 count={totalPages}
                 page={page}
-                onChange={(e, val) => setPage(val)}
+                onChange={(e, val) => {
+                  setPage(val);
+                }}
               />
             ),
           }}
