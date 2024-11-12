@@ -106,15 +106,33 @@ export default function FormModal({ open, handleClose, mode, selectedCar, modalK
 							fullWidth
 							variant="standard"
 						/>
-						<FormControl error={errors.transmission_type} variant="standard" sx={{ m: 1, minWidth: 120 }}>
-							<InputLabel id="transmission_type_label">Transmission Type</InputLabel>
-							<Select labelId="transmission_type_label" name="transmission_type" value={form.transmission_type} onChange={handleChange} label="Transmission Type">
-								{['MANUAL', 'AUTOMATIC', 'AUTOMATED_MANUAL', 'DIRECT_DRIVE', 'UNKNOWN'].map((item) => (
-									<MenuItem value={item} key={item}>
-										{item}
-									</MenuItem>
-								))}
-							</Select>
+            <FormControl
+              error={errors.transmission_type}
+              variant="standard"
+              sx={{ m: 1, minWidth: 120 }}
+            >
+              <InputLabel id="transmission_type_label">
+                Transmission Type
+              </InputLabel>
+              <Select
+                labelId="transmission_type_label"
+                name="transmission_type"
+                value={form.transmission_type || ""}
+                onChange={handleChange}
+                label="Transmission Type"
+              >
+                {[
+                  "MANUAL",
+                  "AUTOMATIC",
+                  "AUTOMATED_MANUAL",
+                  "DIRECT_DRIVE",
+                  "UNKNOWN",
+                ].map((item) => (
+                  <MenuItem value={item} key={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
 							{errors.transmission_type ? <FormHelperText>{errors.transmission_type}</FormHelperText> : null}
 						</FormControl>
 						<FormControl error={errors.size} variant="standard" sx={{ m: 1, minWidth: 120 }}>
